@@ -166,7 +166,7 @@ void InitMemory() {
 	if (Vehicle* veh = GetCurrentVehicle()) {
 		IsInAuto[veh] = veh->TruckAction->IsInAutoMode;
 		veh->TruckAction->IsInAutoMode = false;
-		veh->ShiftToGear(1, 1.01);
+		veh->ShiftToGear(1, 1.05);
 	}
 
 	LogMessage("init", base);

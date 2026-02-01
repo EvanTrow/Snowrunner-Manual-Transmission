@@ -4,7 +4,7 @@
 #include "config.h"
 #include "input.h"
 
-std::atomic<float> currentCoef = 1.01f;
+std::atomic<float> currentCoef = 1.05f;
 
 std::unordered_map <Vehicle*, std::atomic<bool>> IsInAuto{};
 
@@ -158,7 +158,7 @@ void Hooked_SetPowerCoef(Vehicle* veh, float coef) {
 		coef = currentCoef;
 	}
 	if (IsInAuto[veh]) {
-		coef = 1.01;
+		coef = 1.05;
 	}
 	SetPowerCoefO(veh, coef);
 	ShiftGearO(veh, veh->TruckAction->Gear_2);
@@ -169,7 +169,7 @@ void Hooked_SetCurrentVehicle(combine_TRUCK_CONTROL* truckCtrl, Vehicle* veh) {
 	if (veh) {
 		IsInAuto[veh] = veh->TruckAction->IsInAutoMode;
 		if (IsInAuto[veh]) {
-			veh->ShiftToGear(1, 1.01);
+			veh->ShiftToGear(1, 1.05);
 		}
 		veh->TruckAction->IsInAutoMode = false;
 	}
