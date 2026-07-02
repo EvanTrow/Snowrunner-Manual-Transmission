@@ -30,6 +30,9 @@ ini::IniFile WriteDefaultIniConfig() {
 	defaultIniConfig["KEYBOARD"]["RANGE HIGH"] = "NONE";
 	defaultIniConfig["KEYBOARD"]["RANGE LOW"] = "NONE";
 	defaultIniConfig["KEYBOARD"]["SHOW MENU"] = "Kb.211";
+	defaultIniConfig["KEYBOARD"]["AWD"] = "NONE";
+	defaultIniConfig["KEYBOARD"]["DIFF LOCK"] = "NONE";
+	defaultIniConfig["KEYBOARD"]["HANDBRAKE"] = "NONE";
 
 	defaultIniConfig["CONTROLLER"]["GEAR 1"] = "NONE";
 	defaultIniConfig["CONTROLLER"]["GEAR 2"] = "NONE";
@@ -55,6 +58,9 @@ ini::IniFile WriteDefaultIniConfig() {
 	defaultIniConfig["CONTROLLER"]["RANGE HIGH"] = "NONE";
 	defaultIniConfig["CONTROLLER"]["RANGE LOW"] = "NONE";
 	defaultIniConfig["CONTROLLER"]["SHOW MENU"] = "NONE";
+	defaultIniConfig["CONTROLLER"]["AWD"] = "NONE";
+	defaultIniConfig["CONTROLLER"]["DIFF LOCK"] = "NONE";
+	defaultIniConfig["CONTROLLER"]["HANDBRAKE"] = "NONE";
 
 	defaultIniConfig["OPTIONS"]["DISABLE GAME SHIFTING"] = false;
 	defaultIniConfig["OPTIONS"]["SKIP NEUTRAL"] = false;

@@ -17,6 +17,7 @@
 // Additional commands:
 //   PING   -> PONG                                             (always available)
 //   STATUS -> OK VEHICLE=<0|1> GEAR=<n> MAXGEAR=<n> AUTO=<0|1> RANGE=<-1|0|1>
+//             AWD=<0|1> DIFFLOCK=<0|1> HANDBRAKE=<0|1>
 //   LIST   -> OK <space separated list of valid action names>
 //
 // Everything but PING is refused unless [OPTIONS] ENABLE REMOTE CONTROL is
@@ -52,7 +53,10 @@ static std::string BuildStatusResponse() {
 	oss << "OK VEHICLE=1 GEAR=" << remoteGearSnapshot.load()
 		<< " MAXGEAR=" << remoteMaxGearSnapshot.load()
 		<< " AUTO=" << (remoteAutoSnapshot.load() ? 1 : 0)
-		<< " RANGE=" << range.load();
+		<< " RANGE=" << range.load()
+		<< " AWD=" << (remoteAWDSnapshot.load() ? 1 : 0)
+		<< " DIFFLOCK=" << (remoteDiffLockSnapshot.load() ? 1 : 0)
+		<< " HANDBRAKE=" << (remoteHandbrakeSnapshot.load() ? 1 : 0);
 	return oss.str();
 }
 

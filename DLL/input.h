@@ -47,3 +47,6 @@ extern std::atomic<bool> remoteVehiclePresent;
 extern std::atomic<int32_t> remoteGearSnapshot;
 extern std::atomic<int32_t> remoteMaxGearSnapshot;
 extern std::atomic<bool> remoteAutoSnapshot;
+extern std::atomic<bool> remoteAWDSnapshot;
+extern std::atomic<bool> remoteDiffLockSnapshot;
+extern std::atomic<bool> remoteHandbrakeSnapshot;

@@ -72,7 +72,8 @@ function Test-SMTConnection {
 function Get-SMTStatus {
     <#
     .SYNOPSIS
-        Returns the current transmission state (gear, max gear, auto mode, range).
+        Returns the current transmission state (gear, max gear, auto mode, range,
+        AWD, diff lock, handbrake).
     #>
     [CmdletBinding()]
     param()
@@ -87,6 +88,10 @@ function Get-SMTStatus {
         $key, $value = $token -split '='
         switch ($key) {
             'VEHICLE' { $result.Vehicle = $value -eq '1' }
+            'AUTO' { $result.Auto = $value -eq '1' }
+            'AWD' { $result.AWD = $value -eq '1' }
+            'DIFFLOCK' { $result.DiffLock = $value -eq '1' }
+            'HANDBRAKE' { $result.Handbrake = $value -eq '1' }
             default { $result[$key] = [int]$value }
         }
     }
@@ -152,6 +157,9 @@ function Invoke-SMTGearDown { Invoke-SMTAction "GEAR DOWN" }
 function Invoke-SMTRangeHigh { Invoke-SMTAction "RANGE HIGH" }
 function Invoke-SMTRangeLow { Invoke-SMTAction "RANGE LOW" }
 function Show-SMTMenu { Invoke-SMTAction "SHOW MENU" }
+function Invoke-SMTToggleAWD { Invoke-SMTAction "AWD" }
+function Invoke-SMTToggleDiffLock { Invoke-SMTAction "DIFF LOCK" }
+function Invoke-SMTToggleHandbrake { Invoke-SMTAction "HANDBRAKE" }
 
 Export-ModuleMember -Function `
     Send-SMTCommand, `
@@ -170,4 +178,7 @@ Export-ModuleMember -Function `
     Invoke-SMTGearDown, `
     Invoke-SMTRangeHigh, `
     Invoke-SMTRangeLow, `
-    Show-SMTMenu
+    Show-SMTMenu, `
+    Invoke-SMTToggleAWD, `
+    Invoke-SMTToggleDiffLock, `
+    Invoke-SMTToggleHandbrake

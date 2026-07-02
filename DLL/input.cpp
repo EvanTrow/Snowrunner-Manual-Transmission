@@ -23,6 +23,9 @@ std::atomic<bool> remoteVehiclePresent = false;
 std::atomic<int32_t> remoteGearSnapshot = 0;
 std::atomic<int32_t> remoteMaxGearSnapshot = 0;
 std::atomic<bool> remoteAutoSnapshot = false;
+std::atomic<bool> remoteAWDSnapshot = false;
+std::atomic<bool> remoteDiffLockSnapshot = false;
+std::atomic<bool> remoteHandbrakeSnapshot = false;
 
 std::unordered_map<std::string, std::function<void()>> bindFunctions = {
 	{ "GEAR 1",[]() { if (auto veh = GetCurrentVehicle()) { IsInAuto[veh] = true; veh->ShiftToGear(1); } }},
@@ -48,7 +51,10 @@ std::unordered_map<std::string, std::function<void()>> bindFunctions = {
 	{ "CLUTCH",[]() { return; } },
 	{ "RANGE HIGH",[]() { if (range < 1) range++; }},
 	{ "RANGE LOW",[]() { if (range > -1) range--; }},
-	{ "SHOW MENU",[]() {showGui = !showGui; } }
+	{ "SHOW MENU",[]() {showGui = !showGui; } },
+	{ "AWD",[]() { if (auto veh = GetCurrentVehicle()) veh->ToggleAWD(); } },
+	{ "DIFF LOCK",[]() { if (auto veh = GetCurrentVehicle()) veh->ToggleDiffLock(); } },
+	{ "HANDBRAKE",[]() { if (auto veh = GetCurrentVehicle()) veh->ToggleHandbrake(); } }
 };
 
 extern void DetachDLL();
@@ -244,6 +250,9 @@ DWORD WINAPI ProcessInput(LPVOID lpReserved) {
 			remoteGearSnapshot = veh->TruckAction->Gear_1;
 			remoteMaxGearSnapshot = veh->GetMaxGear();
 			remoteAutoSnapshot = IsInAuto[veh].load();
+			remoteAWDSnapshot = veh->TruckAction->AWD;
+			remoteDiffLockSnapshot = veh->TruckAction->Diff;
+			remoteHandbrakeSnapshot = veh->TruckAction->Handbrake;
 			remoteVehiclePresent = true;
 		}
 		else {

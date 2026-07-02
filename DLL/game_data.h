@@ -107,6 +107,21 @@ public:
 	bool ShiftToLowPlusGear();
 
 	bool ShiftToLowMinusGear();
+
+	/**
+	 * @brief Toggles all-wheel drive. @return the new AWD state.
+	 */
+	bool ToggleAWD();
+
+	/**
+	 * @brief Toggles the differential lock. @return the new diff lock state.
+	 */
+	bool ToggleDiffLock();
+
+	/**
+	 * @brief Toggles the handbrake. @return the new handbrake state.
+	 */
+	bool ToggleHandbrake();
 }; // Size: 0x0440
 
 class combine_TRUCK_ADDON_MODEL {

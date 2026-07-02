@@ -90,6 +90,21 @@ bool Vehicle::ShiftToLowMinusGear() {
 	return ShiftToGear(1, PowerCoefLowMinusGear);
 }
 
+bool Vehicle::ToggleAWD() {
+	TruckAction->AWD = !TruckAction->AWD;
+	return TruckAction->AWD;
+}
+
+bool Vehicle::ToggleDiffLock() {
+	TruckAction->Diff = !TruckAction->Diff;
+	return TruckAction->Diff;
+}
+
+bool Vehicle::ToggleHandbrake() {
+	TruckAction->Handbrake = !TruckAction->Handbrake;
+	return TruckAction->Handbrake;
+}
+
 bool Hooked_ShiftGear(Vehicle* veh, std::int32_t gear) {
 	bool result = ShiftGearO(veh, gear);
 	return result;
