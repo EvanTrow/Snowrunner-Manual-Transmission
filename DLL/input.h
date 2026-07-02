@@ -1,5 +1,7 @@
 #pragma once
 #include "shared.h"
+#include <functional>
+#include <unordered_map>
 
 namespace SMT {
 	class KeyListener : public OIS::KeyListener {
@@ -36,3 +38,12 @@ extern std::vector<OIS::JoyStick*> joystickList;
 extern std::set<std::string> tempPressed;
 extern std::atomic<bool> keepAliveInput;
 extern std::atomic<int32_t> range;
+extern std::unordered_map<std::string, std::function<void()>> bindFunctions;
+
+// Snapshot of the current vehicle's transmission state, refreshed every
+// input tick regardless of window focus. Lets other threads (e.g. the IPC
+// server) report status without touching game memory themselves.
+extern std::atomic<bool> remoteVehiclePresent;
+extern std::atomic<int32_t> remoteGearSnapshot;
+extern std::atomic<int32_t> remoteMaxGearSnapshot;
+extern std::atomic<bool> remoteAutoSnapshot;

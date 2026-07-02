@@ -61,6 +61,7 @@ ini::IniFile WriteDefaultIniConfig() {
 	defaultIniConfig["OPTIONS"]["REQUIRE CLUTCH"] = false;
 	defaultIniConfig["OPTIONS"]["IMMERSIVE MODE"] = false;
 	defaultIniConfig["OPTIONS"]["REQUIRE GEAR HELD"] = false;
+	defaultIniConfig["OPTIONS"]["ENABLE REMOTE CONTROL"] = false;
 
 	return defaultIniConfig;
 }

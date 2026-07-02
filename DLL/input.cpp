@@ -4,6 +4,7 @@
 #include "gui.h"
 #include "game_data.h"
 #include "memory.h"
+#include "ipc.h"
 
 extern std::unordered_map <Vehicle*, std::atomic<bool>> IsInAuto;
 
@@ -17,6 +18,11 @@ std::set<std::string> tempPressed;
 std::unordered_map<std::string, bool> wasPressedKb;
 std::unordered_map<std::string, bool> wasPressedJoy;
 std::atomic<int32_t> range = 0;
+
+std::atomic<bool> remoteVehiclePresent = false;
+std::atomic<int32_t> remoteGearSnapshot = 0;
+std::atomic<int32_t> remoteMaxGearSnapshot = 0;
+std::atomic<bool> remoteAutoSnapshot = false;
 
 std::unordered_map<std::string, std::function<void()>> bindFunctions = {
 	{ "GEAR 1",[]() { if (auto veh = GetCurrentVehicle()) { IsInAuto[veh] = true; veh->ShiftToGear(1); } }},
@@ -233,6 +239,33 @@ DWORD WINAPI ProcessInput(LPVOID lpReserved) {
 	LogMessage("Processing input");
 	while (keepAliveInput) {
 		auto nextFrameTime = std::chrono::steady_clock::now();
+
+		if (auto veh = GetCurrentVehicle()) {
+			remoteGearSnapshot = veh->TruckAction->Gear_1;
+			remoteMaxGearSnapshot = veh->GetMaxGear();
+			remoteAutoSnapshot = IsInAuto[veh].load();
+			remoteVehiclePresent = true;
+		}
+		else {
+			remoteVehiclePresent = false;
+		}
+
+		std::string remoteCmd;
+		while (PopRemoteCommand(remoteCmd)) {
+			if (bindFunctions.contains(remoteCmd)) {
+				bindFunctions[remoteCmd]();
+				if (iniConfig["OPTIONS"]["REQUIRE CLUTCH"].as<bool>()) {
+					if (auto veh = GetCurrentVehicle()) {
+						if (!wasPressedKb["CLUTCH"] && !wasPressedJoy["CLUTCH"]) {
+							if (remoteCmd.starts_with("GEAR") && remoteCmd != "GEAR N") {
+								veh->StallCounter = 5;
+							}
+						}
+					}
+				}
+			}
+		}
+
 		if (GetForegroundWindow() == window) {
 			std::set<std::string> functionsToRun;
 			int32_t keyCount = 0;

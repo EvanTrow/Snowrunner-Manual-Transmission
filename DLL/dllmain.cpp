@@ -3,6 +3,7 @@
 #include "config.h"
 #include "input.h"
 #include "memory.h"
+#include "ipc.h"
 
 HMODULE g_hModule = NULL;
 std::atomic<bool> hasConsole = false;
@@ -54,6 +55,7 @@ DWORD WINAPI MainThread(LPVOID lpReserved)
 	InitGui();
 	while (!isGuiInitialized) { Sleep(100); }
 	InitInput();
+	InitIPC();
 	return TRUE;
 }
 
@@ -68,6 +70,7 @@ BOOL WINAPI DllMain(HMODULE hMod, DWORD dwReason, LPVOID lpReserved)
 		break;
 	case DLL_PROCESS_DETACH:
 		//SaveIniConfig();
+		ShutdownIPC();
 		ShutdownInput();
 		do { Sleep(100); } while (keepAliveInput);
 		ShutdownMemory();

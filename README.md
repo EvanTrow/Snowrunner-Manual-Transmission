@@ -27,6 +27,32 @@ Changes take effect immediately but aren't saved unless you use the save button.
 Cycling up/down is done with 'RANGE LOW'/'RANGE HIGH' keybinds. (**Must be a single button**)   \
 When selected, LOW/HIGH simulate their key being pressed, so bind the same button for the range + the actual button to press.
 
+## Remote control (PowerShell / scripting)
+
+The mod can be driven externally over a local named pipe, so any script or tool can trigger the
+same actions as a keybind (shift gears, toggle range, open the menu, etc.) and read back the
+current transmission state.
+
+1. Turn on **ENABLE REMOTE CONTROL** in the mod's OPTIONS panel (or set it to `true` under
+   `[OPTIONS]` in `SMT.ini`). It's off by default, and while it's off the pipe isn't even created.
+2. From PowerShell:
+   ```powershell
+   Import-Module .\PowerShell\SnowRunnerMT.psm1
+   Test-SMTConnection      # $true if the game is running and reachable
+   Get-SMTStatus           # current gear, max gear, auto mode, range
+   Set-SMTGear 3           # shift directly to gear 3
+   Invoke-SMTGearUp        # shift up one gear
+   Invoke-SMTRangeHigh     # cycle range up
+   Show-SMTMenu            # toggle the mod's in-game menu
+   Get-SMTActionList       # every action name the mod accepts
+   ```
+
+Under the hood this is a line-based text protocol on `\\.\pipe\SnowRunnerMT`: write a command
+line (e.g. `GEAR 3`, `GEAR UP`, `CLUTCH`, `RANGE HIGH`, `SHOW MENU`, `STATUS`, `LIST`, `PING`) and
+read back one response line. Any language that can open a Windows named pipe can talk to it, not
+just PowerShell. Commands are queued and executed on the mod's existing input thread, so they
+behave exactly like a bound key press.
+
 ## Credits
 
 ### [Ferrster](https://github.com/Ferrster) for [Snowrunner-Manual-Gearbox-Mod](https://github.com/Ferrster/Snowrunner-Manual-Gearbox-Mod) - reverse engineered game functions and data structures
