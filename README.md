@@ -53,6 +53,34 @@ current transmission state.
    Get-SMTActionList       # every action name the mod accepts
    ```
 
+### Making the module available in every PowerShell window
+
+`Import-Module .\PowerShell\SnowRunnerMT.psm1` only works while your current directory has that
+relative path, and only for the current session. To have the `SMT-*` commands available in any new
+PowerShell window (Windows PowerShell 5.1 or PowerShell 7+) without an explicit `Import-Module`,
+symlink the script into your user module path so PowerShell's module auto-loading picks it up by
+name:
+
+```powershell
+$src = "<path to repo>\PowerShell\SnowRunnerMT.psm1"
+$targets = @(
+    "$HOME\Documents\PowerShell\Modules\SnowRunnerMT"        # PowerShell 7+
+    "$HOME\Documents\WindowsPowerShell\Modules\SnowRunnerMT" # Windows PowerShell 5.1
+)
+foreach ($dir in $targets) {
+    New-Item -ItemType Directory -Path $dir -Force | Out-Null
+    New-Item -ItemType SymbolicLink -Path (Join-Path $dir "SnowRunnerMT.psm1") -Target $src -Force | Out-Null
+}
+```
+
+Because it's a symlink rather than a copy, future edits to the script in the repo take effect
+immediately — no reinstall step needed. Creating a symbolic link requires either an elevated
+PowerShell session or Developer Mode enabled (Settings > Privacy & security > For developers); if
+that's not possible, copy the file into those folders instead of symlinking it.
+
+Once installed, any new PowerShell window can skip the `Import-Module` line and call the commands
+above directly.
+
 Under the hood this is a line-based text protocol on `\\.\pipe\SnowRunnerMT`: write a command
 line (e.g. `GEAR 3`, `GEAR UP`, `CLUTCH`, `RANGE HIGH`, `AWD`, `DIFF LOCK`, `HANDBRAKE`,
 `SHOW MENU`, `STATUS`, `LIST`, `PING`) and read back one response line. Any language that can open
