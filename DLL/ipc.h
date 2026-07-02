@@ -6,7 +6,7 @@
 // bindings by writing newline-terminated command lines to
 // \\.\pipe\SnowRunnerMT and reading a response line back.
 //
-// Disabled by default; enable via [OPTIONS] ENABLE REMOTE CONTROL in SMT.ini
+// Enabled by default; disable via [OPTIONS] ENABLE REMOTE CONTROL in SMT.ini
 // or the in-game menu.
 
 extern void InitIPC();

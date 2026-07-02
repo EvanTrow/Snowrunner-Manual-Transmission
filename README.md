@@ -36,8 +36,8 @@ The mod can be driven externally over a local named pipe, so any script or tool 
 same actions as a keybind (shift gears, toggle range, open the menu, etc.) and read back the
 current transmission state.
 
-1. Turn on **ENABLE REMOTE CONTROL** in the mod's OPTIONS panel (or set it to `true` under
-   `[OPTIONS]` in `SMT.ini`). It's off by default, and while it's off the pipe isn't even created.
+1. **ENABLE REMOTE CONTROL** is on by default (in the mod's OPTIONS panel, or `[OPTIONS]` in
+   `SMT.ini`). Turn it off if you don't want the pipe created.
 2. From PowerShell:
    ```powershell
    Import-Module .\PowerShell\SnowRunnerMT.psm1
