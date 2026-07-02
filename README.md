@@ -28,7 +28,10 @@ Cycling up/down is done with 'RANGE LOW'/'RANGE HIGH' keybinds. (**Must be a sin
 When selected, LOW/HIGH simulate their key being pressed, so bind the same button for the range + the actual button to press.
 
 **AWD / diff lock / handbrake** - bindable like any other action (see the Keyboard/Controller
-tables). Each press toggles the corresponding state on/off.
+tables). Each press toggles the corresponding state on/off. Current state is always shown as an
+on-screen indicator (stacked above the RANGE indicator, green when active) whenever you're in a
+vehicle - this works even when toggled remotely, since it doesn't depend on a keybind being set.
+Turn it off with the **SHOW STATUS OVERLAY** option if you don't want it on screen.
 
 ## Remote control (PowerShell / scripting)
 

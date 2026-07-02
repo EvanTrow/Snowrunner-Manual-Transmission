@@ -161,31 +161,50 @@ HRESULT __stdcall hookedPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, U
 
 	ImVec2 viewport = ImGui::GetMainViewport()->Size;
 
-	if ((iniConfig["KEYBOARD"]["RANGE HIGH"].as<std::string>() != "NONE" || iniConfig["KEYBOARD"]["RANGE LOW"].as<std::string>() != "NONE" ||
-		iniConfig["CONTROLLER"]["RANGE HIGH"].as<std::string>() != "NONE" || iniConfig["CONTROLLER"]["RANGE LOW"].as<std::string>() != "NONE") &&
-		GetCurrentVehicle()) {
+	// Draws one HUD row (background box + drop-shadowed text) at the given
+	// stacked row index, counting upward from the bottom-right corner where
+	// the RANGE indicator has always lived (row 0 == RANGE's spot).
+	auto DrawHudLabel = [&](int32_t row, const std::string& text, ImU32 color) {
 		ImFont* font = ImGui::GetFont();
 		float fontSize = 30.0f;
 		ImDrawList* drawList = ImGui::GetForegroundDrawList();
-		ImVec2 pos = ImVec2(viewport.x * 0.88f, viewport.y * 0.975f);
+		ImVec2 pos = ImVec2(viewport.x * 0.88f, viewport.y * (0.975f - row * 0.045f));
 		ImVec2 boxPos = ImVec2(pos.x * 0.975f, pos.y * 0.999f);
 		drawList->AddImage((ImTextureID)boxTexture, boxPos, ImVec2(boxPos.x + boxWidth, boxPos.y + boxHeight * 0.8f), ImVec2(0, 0), ImVec2(1, 1), IM_COL32(255, 255, 255, 127));
-		switch (range) {
-		case -1: {
-			drawList->AddText(font, fontSize, ImVec2(pos.x + 1, pos.y + 1), IM_COL32(0, 0, 0, 192), "RANGE: LOW");
-			drawList->AddText(font, fontSize, pos, IM_COL32(255, 255, 255, 255), "RANGE: LOW");
-			break;
+		drawList->AddText(font, fontSize, ImVec2(pos.x + 1, pos.y + 1), IM_COL32(0, 0, 0, 192), text.c_str());
+		drawList->AddText(font, fontSize, pos, color, text.c_str());
+	};
+
+	if (auto veh = GetCurrentVehicle()) {
+		if (iniConfig["KEYBOARD"]["RANGE HIGH"].as<std::string>() != "NONE" || iniConfig["KEYBOARD"]["RANGE LOW"].as<std::string>() != "NONE" ||
+			iniConfig["CONTROLLER"]["RANGE HIGH"].as<std::string>() != "NONE" || iniConfig["CONTROLLER"]["RANGE LOW"].as<std::string>() != "NONE") {
+			switch (range) {
+			case -1: DrawHudLabel(0, "RANGE: LOW", IM_COL32(255, 255, 255, 255)); break;
+			case 0: DrawHudLabel(0, "RANGE: NORMAL", IM_COL32(255, 255, 255, 255)); break;
+			case 1: DrawHudLabel(0, "RANGE: HIGH", IM_COL32(255, 255, 255, 255)); break;
+			}
 		}
-		case 0: {
-			drawList->AddText(font, fontSize, ImVec2(pos.x + 1, pos.y + 1), IM_COL32(0, 0, 0, 192), "RANGE: NORMAL");
-			drawList->AddText(font, fontSize, pos, IM_COL32(255, 255, 255, 255), "RANGE: NORMAL");
-			break;
-		}
-		case 1: {
-			drawList->AddText(font, fontSize, ImVec2(pos.x + 1, pos.y + 1), IM_COL32(0, 0, 0, 192), "RANGE: HIGH");
-			drawList->AddText(font, fontSize, pos, IM_COL32(255, 255, 255, 255), "RANGE: HIGH");
-			break;
-		}
+
+		// Unlike RANGE, these reflect real vehicle state that can change via
+		// remote control (no local keybind required), so they're gated on the
+		// SHOW STATUS OVERLAY option instead of a KEYBOARD/CONTROLLER binding.
+		// TruckAction is a pointer and this runs every frame on the render
+		// thread, so it must be null-checked here rather than assumed valid
+		// whenever veh is.
+		if (iniConfig["OPTIONS"]["SHOW STATUS OVERLAY"].as<bool>() && veh->TruckAction) {
+			int32_t row = 1;
+			struct StateIndicator { const char* label; bool active; };
+			StateIndicator indicators[] = {
+				{ "AWD", veh->TruckAction->AWD },
+				{ "DIFF LOCK", veh->TruckAction->Diff },
+				{ "HANDBRAKE", veh->TruckAction->Handbrake },
+			};
+			for (auto& ind : indicators) {
+				std::string text = std::string(ind.label) + ": " + (ind.active ? "ON" : "OFF");
+				ImU32 color = ind.active ? IM_COL32(120, 255, 120, 255) : IM_COL32(255, 255, 255, 255);
+				DrawHudLabel(row, text, color);
+				row++;
+			}
 		}
 	}
 
